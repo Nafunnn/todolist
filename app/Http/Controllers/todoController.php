@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Priority;
+use App\Models\Status;
 use Carbon\Carbon;
 use App\Models\Todo;
 use App\Models\User;
@@ -14,11 +16,11 @@ class todoController extends Controller
 {
     public function home()
     {
-        $todos = Todo::where('user_id', Auth::id())->orderBy('creation_date', 'desc')->get();
+        $todos = Todo::with('user','status','priority')->where('user_id', Auth::id())->orderBy('creation_date', 'desc')->get();
 
         // Check if the user is an admin
         if (Auth::user()->role == 'admin') {
-            $todosAdmin = Todo::with('user')->orderBy('creation_date', 'desc')->get();
+            $todosAdmin =  Todo::with('user','status','priority')->with('user')->orderBy('creation_date', 'desc')->get();
             $data = ['todosAdmin' => $todosAdmin];
         } else {
             $data = ['todos' => $todos];
@@ -34,21 +36,21 @@ class todoController extends Controller
 
         // Cari todo berdasarkan query yang dimasukkan
         if ($user->role == 'user') {
-            $todos = Todo::where('user_id', $user->id)
+            $todos = Todo::with('user', 'status', 'priority')->where('user_id', $user->id)
                     ->where(function ($q) use ($query) {
                         $q->where('title', 'LIKE', "%$query%")
                         ->orWhere('desc', 'LIKE', "%$query%");
                     })
-                    ->get();
+                    ->orderBy('creation_date', 'desc')->get();
             $data = ['todos' => $todos, 'query' => $query];
 
         } elseif ($user->role == 'admin') {
-            $todosAdmin = Todo::with('user')
+            $todosAdmin = Todo::with('user', 'status', 'priority')
                             ->where(function ($q) use ($query) {
                                 $q->where('title', 'LIKE', "%$query%")
                                 ->orWhere('desc', 'LIKE', "%$query%");
                             })
-                            ->get();
+                            ->orderBy('creation_date', 'desc')->get();
 
             $data = ['todosAdmin' => $todosAdmin, 'query' => $query];
         }
@@ -65,30 +67,29 @@ class todoController extends Controller
 
 
     public function details($id){
-        $todos = DB::table('todos')->where('id', $id)->get();
+        $todos =  Todo::with('user','status','priority')->where('id', $id)->get();
 
         if (Auth::user()->role == 'admin') {
-            $todosAdmin = Todo::where('id', $id)->with('user')->get();
+            $todosAdmin = Todo::with('user','status','priority')->where('id', $id)->with('user')->get();
             $data = ['todosAdmin' => $todosAdmin];
         } else {
             $data = ['todos' => $todos];
         }
-        // dd($data);
         return view('home.details', $data);
     }
     public function dashboard(){
         if (Auth::user()->role == 'admin') {
-            $todos = Todo::get();
-            $users = User::where('role', 'user')->get();
+            $todos =  Todo::with('user','status','priority')->get();
+            $users = User::where('role', 'user')->orderBy('created_at', 'desc')->get();
             $user = User::where('role', 'user')->get();
             $totalTodo = $todos->count();
-            $priorityLow = $todos->where('priority', 'Low')->count();
-            $priorityMed = $todos->where('priority', 'Medium')->count();
-            $priorityHigh = $todos->where('priority', 'High')->count();
-            $statNotDone = $todos->where('stat', 'Not Done')->count();
-            $statNeedReview = $todos->where('stat', 'Need Review')->count();
-            $statToDo = $todos->where('stat', 'To Do')->count();
-            $statDone = $todos->where('stat', 'Done')->count();
+            $priorityLow = $todos->where('priority_id', '1')->count();
+            $priorityMed = $todos->where('priority_id', '2')->count();
+            $priorityHigh = $todos->where('priority_id', '3')->count();
+            $statNotDone = $todos->where('status_id', '1')->count();
+            $statNeedReview = $todos->where('status_id', '3')->count();
+            $statToDo = $todos->where('status_id', '2')->count();
+            $statDone = $todos->where('status_id', '4')->count();
             $statUser = $user->count();
 
             $totalNotDone = $statToDo + $statNotDone;
@@ -100,15 +101,15 @@ class todoController extends Controller
         } elseif (Auth::user()->role == 'user') {
             $user = Auth::user();
             $users = 0;
-            $todos = Todo::where('user_id', $user->id)->get();
+            $todos = Todo::with('user','status','priority')->where('user_id', $user->id)->get();
             $totalTodo = $todos->count();
-            $priorityLow = $todos->where('priority', 'Low')->count();
-            $priorityMed = $todos->where('priority', 'Medium')->count();
-            $priorityHigh = $todos->where('priority', 'High')->count();
-            $statNotDone = $todos->where('stat', 'Not Done')->count();
-            $statToDo = $todos->where('stat', 'To Do')->count();
-            $statNeedReview = $todos->where('stat', 'Need Review')->count();
-            $statDone = $todos->where('stat', 'Done')->count();
+            $priorityLow = $todos->where('priority_id', '1')->count();
+            $priorityMed = $todos->where('priority_id', '2')->count();
+            $priorityHigh = $todos->where('priority_id', '3')->count();
+            $statNotDone = $todos->where('status_id', '1')->count();
+            $statToDo = $todos->where('status_id', '2')->count();
+            $statNeedReview = $todos->where('status_id', '3')->count();
+            $statDone = $todos->where('status_id', '4')->count();
             $statUser = $user;
 
             $totalNotDone = $statToDo + $statNotDone;
@@ -137,26 +138,17 @@ class todoController extends Controller
     }
 
     public function create(){
-        return view ('create.create');
+        return view('create.create');
     }
 
     public function store(Request $request)
 {
-    // $todoId = DB::table('todos')->insert([
-    //     'title' => $request->title,
-    //     'desc' => $request->desc,
-    //     'due_date' => $request->due_date,
-    //     'priority' => $request->priority,
-    //     'stat' => $request->stat,
-    //     // 'creation_date' => Carbon::now(),
-    //     'user_id' => auth()->user()->id,
-    // ]);
     $todo = Todo::create([
         'title' => $request->title,
         'desc' => $request->desc,
         'due_date' => $request->due_date,
-        'priority' => $request->priority,
-        'stat' => $request->stat,
+        'priority_id' => $request->priority_id,
+        'status_id' => $request->status_id,
         'type' => 'create',
         'creation_date' => Carbon::now(),
         'user_id' => auth()->user()->id,
@@ -170,18 +162,11 @@ class todoController extends Controller
         'body' => 'User ' . auth()->user()->name . ' created a new To Do: ' . $todo->title.' on '. $todo->creation_date,
     ]);
 
-    // DB::table('history')->insert([
-    //     'title' => $request->title,
-    //     'user_id' => auth()->user()->id,
-    //     'todo_id' => $todoId->id, // Use the retrieved todoId here
-    //     'body' => 'User ' . auth()->user()->name . ' created a new To Do: ' . $request->title.' on '.$todoId->creation_date,
-    // ]);
-
         return redirect('/home')->with('status', 'New todo created successfully');
 
     }
     public function edit($id){
-        $todos = DB::table('todos')->where('id', $id)->get();
+        $todos =  Todo::with('user','status','priority')->where('id', $id)->get();
         // dd($todos);
         return view('edit.edit', compact(['todos']));
     }
@@ -202,8 +187,8 @@ class todoController extends Controller
             'title'=>$request->title,
             'desc'=>$request->desc,
             'due_date'=>$request->due_date,
-            'priority'=>$request->priority,
-            'stat'=>$request->stat,
+            'priority_id'=>$request->priority_id,
+            'status_id'=>$request->status_id,
             'user_id'=>auth()->user()->id,
         ]);
         return redirect('/home')->with('status', 'Todo edited successfully');
@@ -227,16 +212,15 @@ class todoController extends Controller
     }
 
     public function trash() {
-        $todos = Todo::onlyTrashed()->where('user_id', Auth::id())->get();
+        $todos =  Todo::with('user','status','priority')->onlyTrashed()->where('user_id', Auth::id())->orderBy('deleted_at', 'desc')->get();
 
         // Check if the user is an admin
         if (Auth::user()->role == 'admin') {
-            $todosAdmin = Todo::with('user')->onlyTrashed()->get();
+            $todosAdmin =  Todo::orderBy('deleted_at', 'desc')->with('user','status','priority')->onlyTrashed()->get();
             $data = ['todosAdmin' => $todosAdmin];
         } else {
             $data = ['todos' => $todos];
         }
-        // dd($data);
 
         return view('trash.trash', $data);
     }
@@ -277,9 +261,9 @@ class todoController extends Controller
 
     }
     public function submit($id){
-        $todo = Todo::findOrFail($id);
+        $todo =  Todo::with('user','status','priority')->findOrFail($id);
         $todo->update([
-            'stat' => 'Done'
+            'status_id' => '4'
         ]);
 
         return redirect('/details/'.$id)->with('status', 'This todo has been successfully validated to be done.');

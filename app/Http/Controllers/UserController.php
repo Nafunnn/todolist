@@ -76,6 +76,12 @@ class UserController extends Controller
         $todos = Todo::where('user_id', $id)->get();
         $timeNow = Carbon::now();
 
+        // Menghapus todos
+        $todos->each->forceDelete(); // Menggunakan each untuk memanggil forceDelete pada setiap todo
+
+        // Menghapus user secara permanen
+        $user->forceDelete();
+
         // Menyimpan riwayat penghapusan user
         History::create([
             'title' => $user->name,
@@ -84,12 +90,6 @@ class UserController extends Controller
             'user_id_delete' => $user->id,
             'body' => 'User ' . auth()->user()->name . ' deleted User : ' . $user->name." and user's To Do from trash on ". $timeNow,
         ]);
-
-        // Menghapus todos
-        $todos->each->forceDelete(); // Menggunakan each untuk memanggil forceDelete pada setiap todo
-
-        // Menghapus user secara permanen
-        $user->forceDelete();
 
         return redirect('/trash')->with('status', "User and user's todo has been deleted successfully");
     }

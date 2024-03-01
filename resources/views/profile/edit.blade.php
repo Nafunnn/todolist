@@ -5,10 +5,10 @@
     <h1 class="my-6 text-2xl font-semibold dark:text-slate-400">Your Profile</h1>
     <form action="/profile/edit/update" method="POST" enctype="multipart/form-data">
         @csrf
-        <div class="grid grid-cols-2 gap-6">
-            <div>
+        <div class="grid sm:grid-cols-2 gap-6">
+            <div class="    ">
                 <div class="flex justify-center" >
-                    <div class="shadow-lg rounded-full" style="height: 256px; width: 256px">
+                    <div class="shadow-lg rounded-full w-64" style="">
                         <img class="rounded-full" src="{{ asset(auth()->user()->image) }}" alt="Profile Picture">
                     </div>
                 </div>
@@ -30,9 +30,9 @@
                 </div>
                 @endforeach
             </div>
-            <div>
-                <div class="mb-4 gap-8">
-                    <div class="stats shadow w-full dark:bg-slate-700 dark:text-slate-200">
+            <div class="overflow-x-auto">
+                <div class="flex justify-center mb-4">
+                    <div class="stats shadow dark:bg-slate-700 dark:text-slate-200">
 
                         <div class="stat">
                           <div class="stat-title dark:text-slate-400">Total ToDo</div>
@@ -82,8 +82,8 @@
                                 <tr>
                                     <td>{{ $i }}</td>
                                     <td>{{ $todo->title }}</td>
-                                    <td>{{ $todo->priority }}</td>
-                                    <td>{{ $todo->stat }}</td>
+                                    <td>{{ $todo->priority->priority }}</td>
+                                    <td>{{ $todo->status->status }}</td>
                                 </tr>
                                 @php
                                     $i++

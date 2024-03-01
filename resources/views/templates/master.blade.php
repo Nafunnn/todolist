@@ -114,7 +114,7 @@
                           <li>
                                 <a href="/profile">Profile</a>
                                 @if (Auth::user()->role == 'admin')
-                                    <a href="/backup">Backup</a>
+                                    <a href="/settings">Settings</a>
                                 @endif
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
@@ -134,14 +134,14 @@
     </header>
     {{-- NAVBAR --}}
 
-    <div class="mx-12 min-h-screen">
+    <div class="sm:mx-12 mx-6 min-h-screen">
         @yield('body')
     </div>
 
     {{-- FOOTER --}}
     <footer class="footer footer-center p-4 bg-base-300 text-base-content">
         <aside>
-          <p>Copyright © 2024 - All right reserved by Sintya Faiza</p>
+          <p>Copyright © 2024 - All right reserved by Naf'an Nur'Alim</p>
         </aside>
       </footer>
     {{-- FOOTER --}}

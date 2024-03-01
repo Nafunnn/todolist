@@ -5,12 +5,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\todoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ComproController;
+use App\Http\Controllers\SeederController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RestoreController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Auth\LoginController;
 
 /*
@@ -24,12 +28,9 @@ use App\Http\Controllers\Auth\LoginController;
 |
 */
 
-// Route::get('/login', [LoginController::class, ''])
 
 
 Route::middleware(['auth', 'CekRole:admin'])->group(function(){
-    // Route::get('/',[todoController::class, 'home']);
-    // Route::get('/details/{id}',[todoController::class, 'details']);
     Route::get('/history',[HistoryController::class, 'index']);
     Route::get('/user/{id}/detail',[UserController::class, 'index']);
     Route::get('/user/{id}/delete',[UserController::class, 'delete']);
@@ -37,12 +38,10 @@ Route::middleware(['auth', 'CekRole:admin'])->group(function(){
     Route::put('/trash/user/{id}/restore',[UserController::class, 'restore']);
     Route::post('/trash/user/{id}/delete',[UserController::class, 'forceDelete']);
     Route::get('/submit/done/{id}',[todoController::class, 'submit']);
+    Route::get('/settings', [SettingsController::class, 'index']);
     Route::get('/backup', [BackupController::class, 'backup']);
-    // Route::get('/create',[todoController::class, 'create']);
-    // Route::post('/create/store',[todoController::class, 'store']);
-    // Route::get('/edit/{id}',[todoController::class, 'edit']);
-    // Route::put('/edit/{id}',[todoController::class, 'update']);
-    // Route::get('/delete/{id}',[todoController::class, 'delete']);
+    Route::post('restore', [RestoreController::class, 'restore']);
+    Route::get('/run-seeder', [SeederController::class, 'runSeeder']);
 });
 
 Route::middleware(['auth', 'CekRole:user'])->group(function(){
@@ -70,6 +69,9 @@ Route::middleware(['auth', 'CekRole:admin,user'])->group(function(){
 Route::get('/',[ComproController::class, 'index']);
 Route::get('/forgot/password', [UserController::class, 'resetView']);
 Route::post('/reset/password/store', [UserController::class, 'storeReset']);
+Route::get('/test', [TestController::class, 'index']);
+Route::get('/test1', [TestController::class, 'index1']);
+Route::get('/test2', [TestController::class, 'index2']);
 
 
 

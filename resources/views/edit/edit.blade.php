@@ -6,7 +6,7 @@
     <form action="/edit/{{ $todo->id }}/store" method="POST">
         @method('put')
         @csrf
-        <div class="grid grid-cols-3 gap-8">
+        <div class="grid sm:grid-cols-3 gap-8">
             <div>
                 <h1 class="dark:text-slate-400 font-semibold mb-4">Title</h1>
                 <input value="{{ $todo->title }}" name="title" type="text" placeholder="Type here" class="input input-bordered rounded-sm dark:bg-neutral dark:border-slate-400 dark:text-slate-400 w-full max-w-xs" />
@@ -18,16 +18,16 @@
 
             <div>
                 <h1 class="dark:text-slate-400 font-semibold mb-4">Priority</h1>
-                <select class="select select-bordered rounded-sm dark:bg-neutral dark:text-slate-400 w-full max-w-xs" name="priority" id="">
-                    <option @if ($todo->priority == 'Low')
+                <select class="select select-bordered rounded-sm dark:bg-neutral dark:text-slate-400 w-full max-w-xs" name="priority_id" id="">
+                    <option @if ($todo->priority_id == '1')
                         selected
-                    @endif value="Low">Low</option>
-                    <option @if ($todo->priority == 'Medium')
+                    @endif value="1">Low</option>
+                    <option @if ($todo->priority_id == '2')
                         selected
-                    @endif value="Medium">Medium</option>
-                    <option @if ($todo->priority == 'High')
+                    @endif value="2">Medium</option>
+                    <option @if ($todo->priority_id == '3')
                         selected
-                    @endif value="High">High</option>
+                    @endif value="3">High</option>
                 </select>
             </div>
             <div>
@@ -36,20 +36,20 @@
             </div>
             <div>
                 <h1 class="dark:text-slate-400 font-semibold mb-4">Status</h1>
-                <select class="select select-bordered rounded-sm dark:bg-neutral dark:text-slate-400 w-full max-w-xs" name="stat" id="">
-                    <option @if ($todo->stat == 'Not Done')
+                <select class="select select-bordered rounded-sm dark:bg-neutral dark:text-slate-400 w-full max-w-xs" name="status_id" id="">
+                    <option @if ($todo->status_id == '1')
                         selected
-                    @endif value="Not Done">Not Done</option>
-                    <option @if ($todo->stat == 'To Do')
+                    @endif value="1">Not Done</option>
+                    <option @if ($todo->status_id == '2')
                         selected
-                    @endif value="To Do">To Do</option>
-                    <option @if ($todo->stat == 'Need Review')
+                    @endif value="2">To Do</option>
+                    <option @if ($todo->status_id == '3')
                         selected
-                    @endif value="Need Review">Need Review</option>
+                    @endif value="3">Need Review</option>
                     @if (Auth::user()->role == 'admin')
-                    <option @if ($todo->stat == 'Done')
+                    <option @if ($todo->status_id == '4')
                         selected
-                    @endif value="Done">Done</option>
+                    @endif value="4">Done</option>
                     @endif
                 </select>
             </div>

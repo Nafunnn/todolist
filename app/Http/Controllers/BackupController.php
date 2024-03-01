@@ -15,12 +15,17 @@ class BackupController extends Controller
         $csvFiles = [];
 
         // Daftar semua tabel yang ingin di-backup
-        $tables = ['todos', 'users', 'histories'];
+        $tables = ['histories'];
 
         foreach ($tables as $table) {
-            $data = DB::table($table)->get();
+            // Ambil semua kolom kecuali kolom 'id'
+            $data = DB::table($table)->select('*')->get();
+
             $csvFilePath = storage_path('app/backups/' . $table . '.csv');
             $file = fopen($csvFilePath, 'w');
+
+            // Tulis judul kolom ke file CSV
+            fputcsv($file, array_keys((array) $data->first()));
 
             // Isi file CSV dengan data dari tabel
             foreach ($data as $row) {
@@ -57,5 +62,4 @@ class BackupController extends Controller
         // Unduh file ZIP
         return response()->download($zipFilePath)->deleteFileAfterSend(true);
     }
-
 }

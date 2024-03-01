@@ -1,7 +1,7 @@
 @extends('templates.master')
 
 @section('body')
-<div class="overflow-x-auto dark:text-slate-400 ">
+<div class=" dark:text-slate-400 ">
     <h1 class="my-6 text-2xl font-semibold">Your Archive To Do List</h1>
     @if (session('status'))
     <div class="toast toast-top toast-end">
@@ -11,7 +11,7 @@
         </div>
     </div>
     @endif
-    <div class="">
+    <div class="overflow-x-auto">
         <table class="table rounded-lg">
             <!-- head -->
             <thead>
@@ -53,23 +53,23 @@
 
                         <td>
                             <div class=" badge badge-ghost dark:border-none
-                            @if ($todo->priority == 'Low' )
+                            @if ($todo->priority_id == '1' )
                                         bg-info text-white font-medium
-                                    @elseif ($todo->priority == 'Medium' )
+                                    @elseif ($todo->priority_id == '2' )
                                         bg-warning text-white font-medium
-                                    @elseif ($todo->priority == 'High' )
+                                    @elseif ($todo->priority_id == '3' )
                                         bg-error text-white font-medium
-                                    @endif">{{ $todo->priority }}</div>
+                                    @endif">{{ $todo->priority->priority }}</div>
                         </td>
                         <td>
                             <div class="badge badge-ghost dark:border-none
-                            @if ($todo->stat == 'Not Done' )
+                            @if ($todo->status_id == '1' )
                                         bg-error text-white font-medium
-                                    @elseif ($todo->stat == 'To Do' )
+                                    @elseif ($todo->status_id == '2' )
                                         bg-warning text-white font-medium
-                                    @elseif ($todo->stat == 'Done' )
+                                    @elseif ($todo->status_id == '4' )
                                         bg-success text-white font-medium
-                                    @endif">{{ $todo->stat }}</div>
+                                    @endif">{{ $todo->status->status }}</div>
                         </td>
                         <td class="flex gap-1">
                             <!-- The button to open modal -->

@@ -14,12 +14,12 @@ class ProfileController extends Controller
         $id = Auth::id();
         $profiles = User::where('id', $id)->get();
         if (Auth::user()->role == 'admin') {
-            $todoUser = Todo::get();
+            $todoUser = Todo::with('user', 'priority', 'status')->get();
         } else {
-            $todoUser = Todo::where('user_id', Auth::id())->get();
+            $todoUser = Todo::with('user', 'priority', 'status')->where('user_id', Auth::id())->get();
         }
-        $countTodoDone = $todoUser->where('stat', 'Done')->count();
-        $countNotDone = $todoUser->where('stat', 'Not Done')->count();
+        $countTodoDone = $todoUser->where('status_id', '4')->count();
+        $countNotDone = $todoUser->where('status_id', '1')->count();
         $countTodo = count($todoUser);
         if ($countTodo != 0) {
             $percentDone = $countTodoDone / $countTodo * 100;

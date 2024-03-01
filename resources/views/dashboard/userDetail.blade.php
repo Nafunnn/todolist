@@ -50,8 +50,8 @@
                         <tr>
                             <td>{{ $i }}</td>
                             <td>{{ $todo->title }}</td>
-                            <td>{{ $todo->priority }}</td>
-                            <td>{{ $todo->stat }}</td>
+                            <td>{{ $todo->priority->priority }}</td>
+                            <td>{{ $todo->status->status }}</td>
                         </tr>
                         @php
                             $i++

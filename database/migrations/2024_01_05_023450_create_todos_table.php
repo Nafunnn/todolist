@@ -16,14 +16,14 @@ return new class extends Migration
             $table->string('title');
             $table->text('desc');
             $table->date('due_date');
-            $table->enum('priority', ['Low', 'Medium', 'High'])->default('Low');
-            $table->enum('stat', ['Not Done', 'To Do', 'Need Review', 'Done'])->default('Not Done');
+            $table->foreignId('priority_id')->constrained();
+            $table->foreignId('status_id')->constrained();
             $table->timestamp('creation_date')->default(now());
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
-
         });
+
     }
 
     /**

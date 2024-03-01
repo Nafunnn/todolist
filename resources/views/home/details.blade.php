@@ -14,7 +14,7 @@
         </div>
         @endif
         @foreach ($todosAdmin ?? $todos as $todo)
-        <div class="grid grid-cols-3">
+        <div class="grid sm:grid-cols-3">
             <div class="col-span-2">
                 @if (Auth::user()->role == 'admin')
                     <h1 class="font-semibold my-4 opacity-50">{{ $todo->user->name }} to do is</h1>
@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div>
-                <div class="card rounded-sm w-96 bg-slate-50 shadow-lg dark:bg-neutral dark:text-neutral-content my-4">
+                <div class="card rounded-sm w-fit bg-slate-50 shadow-lg dark:bg-neutral dark:text-neutral-content my-4">
                     <div class="card-body">
                       <h2 class="card-title mb-2">Details!</h2>
                       @if (Auth::user()->role == 'admin')
@@ -58,40 +58,40 @@
                       </div>
                       <div class="grid grid-cols-2 gap-4">
                         <div class="flex gap-4 rounded-lg bg-slate-50 dark:bg-slate-700 shadow-md">
-                            <div class="w-2 m-2 @if ($todo->priority == 'Low' )
+                            <div class="w-2 m-2 @if ($todo->priority_id == '1' )
                                 bg-info
-                            @elseif ($todo->priority == 'Medium' )
+                            @elseif ($todo->priority_id == '2' )
                                 bg-warning
-                            @elseif ($todo->priority == 'High' )
+                            @elseif ($todo->priority_id == '3' )
                                 bg-error
                             @endif rounded-lg"></div>
                             <div class="my-2">
-                                <h1 class="font-semibold text-xl">{{ $todo->priority }}</h1>
+                                <h1 class="font-semibold text-xl">{{ $todo->priority->priority }}</h1>
                                 <h3 class="opacity-50 -mt-1">Priority</h3>
                             </div>
                           </div>
                           <div class="flex gap-4 rounded-lg bg-slate-50 dark:bg-slate-700 shadow-md">
-                            <div class="w-2 m-2 @if ($todo->stat == 'Not Done' )
+                            <div class="w-2 m-2 @if ($todo->status_id == '1' )
                                 bg-error
-                            @elseif ($todo->stat == 'To Do' )
+                            @elseif ($todo->status_id == '2' )
                                 bg-warning
-                            @elseif ($todo->stat == 'Need Review' )
+                            @elseif ($todo->status_id == '3' )
                                 bg-slate-400
-                            @elseif ($todo->stat == 'Done' )
+                            @elseif ($todo->status_id == '4' )
                                 bg-success
                             @endif rounded-lg"></div>
                             <div class="my-2">
-                                <h1 class="font-semibold text-xl">{{ $todo->stat }}</h1>
+                                <h1 class="font-semibold text-xl">{{ $todo->status->status }}</h1>
                                 <h3 class="opacity-50 -mt-1">Status</h3>
                             </div>
                           </div>
                       </div>
                         @if (Auth::user()->role == 'admin')
-                            @if ($todo->stat == 'Need Review')
+                            @if ($todo->status_id == '3')
                             <div class="mt-4">
                                 <a class="btn btn-success w-full" href="/submit/done/{{ $todo->id }}">Submit Done</a>
                             </div>
-                            @elseif ($todo->stat == 'Done')
+                            @elseif ($todo->status_id == '4')
                             <div class="mt-4">
                                 <h1 class="text-success text-sm font-semibold">This todo has been validated to be done.</h1>
                             </div>
@@ -101,11 +101,11 @@
                             </div>
                             @endif
                         @else
-                        @if ($todo->stat == 'Need Review')
+                        @if ($todo->status_id == '3')
                             <div class="mt-4">
                                 <h1 class="text-warning text-sm font-semibold">Waiting for admin to validate this todo.</h1>
                             </div>
-                            @elseif ($todo->stat == 'Done')
+                            @elseif ($todo->status_id == '4')
                             <div class="mt-4">
                                 <h1 class="text-success text-sm font-semibold">This todo has been validated to be done.</h1>
                             </div>
